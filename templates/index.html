@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do List</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+    <style>
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-actions button {
+            margin-left: 5px;
+        }
+        .completed {
+            text-decoration: line-through;
+            color: grey;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h1 class="text-center">To-do List</h1>
+
+    <!-- Flash Messages for feedback -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Form for adding a new task -->
+    <form action="{{ url_for('add') }}" method="post" class="mb-4">
+        <div class="input-group">
+            <input type="text" id="todo" name="todo" class="form-control" placeholder="Enter a new task" required>
+            <button type="submit" class="btn btn-primary">Add Task</button>
+        </div>
+    </form>
+
+    <!-- Task List Display -->
+    {% if tasks %}
+        <ul class="list-group">
+            {% for item in tasks %}
+                <li class="list-group-item task-item">
+                    <span class="{% if item.completed %}completed{% endif %}">
+                        {{ item.id }}. {{ item.todo }}
+                    </span>
+                    <div class="task-actions">
+                        <form action="{{ url_for('delete', id=item.id) }}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        <a href="{{ url_for('update', id=item.id) }}" class="btn btn-success btn-sm">Update</a>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-center">No tasks yet. Add one!</p>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
